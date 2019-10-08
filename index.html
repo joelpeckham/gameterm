@@ -1,74 +1,88 @@
 <!doctype html>
 
 <!--
-    Teaching computing concepts through a "gameified" command line. 
-    This is an open source project by Joel Peckham and 
-    Proffesor Robert Ordóñez of Southern Adventist University.
-    October 8, 2019
+Teaching computing concepts through a "gameified" command line. 
+This is an open source project by Joel Peckham and 
+Proffesor Robert Ordóñez of Southern Adventist University.
+October 8, 2019
 -->
 
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
+    <head>
+        <meta charset="utf-8">
 
-  <title>Terminal</title>
-  <meta name="description" content="Teaching computing concepts through a gameified command line.">
-  <meta name="author" content="SitePoint">
+        <title>Terminal</title>
+        <meta name="description" content="Teaching computing concepts through a gameified command line.">
+        <meta name="author" content="SitePoint">
 
-  <link rel="stylesheet" href="styles.css" type = "text/css" >
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700,900&display=swap" rel="stylesheet">
 
-  <!-- xterm.js must be installed through npm-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.js"></script>
+        <link rel="stylesheet" href="xterm.css" type="text/css"/>
+        <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+        <script src="node_modules/xterm/lib/xterm.js"></script>
+        <script src = "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
 
-</head>
+        <link rel="stylesheet" href="style.css" type = "text/css" >
+    </head>
 
-<body>
+    <body>
+        <div id = "grid">
+            <div id = "sidebar">
+                <h1>Terminal</h1>
+                <div class = "Divider"></div>
+                <p>This is a paragraph explaining what to do with this terminal. Currently, there is nothing to do. Just type and press enter.</p>
+            </div>
+            <div id = "terminal"></div>
+            <script>
+                var term = new Terminal();
+                //var fitAddon = new FitAddon();
+                
+                //term.loadAddon(fitAddon);
+                term.open(document.getElementById('terminal'));
 
-  <div id="terminal"></div>
-      <script>
-        var term = new Terminal();
-        term.open(document.getElementById('terminal'));
-        function runFakeTerminal() {
-        if (term._initialized) {
-            return;
-        }
+                //fitAddon.fit();
 
-        term._initialized = true;
+                function runFakeTerminal() {
+                    if (term._initialized) {
+                        return;
+                    }
 
-        term.prompt = () => {
-            term.write('\r\n$ ');
-        };
+                    term._initialized = true;
 
-        term.writeln('Welcome to xterm.js');
-        term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
-        term.writeln('Type some keys and commands to play around.');
-        term.writeln('');
-        prompt(term);
+                    term.prompt = () => {
+                        term.write('\r\n$ ');
+                    };
 
-        term.onKey(e => {
-            const printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
+                    term.writeln('Welcome to xterm.js');
+                    term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
+                    term.writeln('Type some keys and commands to play around.');
+                    term.writeln('');
+                    prompt(term);
 
-            if (e.domEvent.keyCode === 13) {
-                prompt(term);
-            } else if (e.domEvent.keyCode === 8) {
-                // Do not delete the prompt
-                if (term._core.buffer.x > 2) {
-                    term.write('\b \b');
+                    term.onKey(e => {
+                        const printable = !e.domEvent.altKey && !e.domEvent.altGraphKey && !e.domEvent.ctrlKey && !e.domEvent.metaKey;
+
+                        if (e.domEvent.keyCode === 13) {
+                            prompt(term);
+                        } else if (e.domEvent.keyCode === 8) {
+                            // Do not delete the prompt
+                            if (term._core.buffer.x > 2) {
+                                term.write('\b \b');
+                            }
+                        } else if (printable) {
+                            term.write(e.key);
+                        }
+                    });
                 }
-            } else if (printable) {
-                term.write(e.key);
-            }
-        });
-    }
 
-    function prompt(term) {
-      term.write('\r\n$ ');
-    }
-    runFakeTerminal();
-      </script>
+                function prompt(term) {
+                    term.write('\r\n$ ');
+                }
+                runFakeTerminal();
+            </script>
+        </div>
 
-</body>
+    </body>
 
 </html>
