@@ -1,5 +1,5 @@
 :root{
-    --highlight-color: #4c5e7e;
+    --highlight-color: #484848;
 }
 
 body{
@@ -12,7 +12,7 @@ body{
     padding:0;
     margin:0;
     display: grid;
-    grid-template-columns: 20rem auto;
+    grid-template-columns: 18rem auto;
     height:100vh;
 }
 
@@ -24,9 +24,18 @@ body{
     box-shadow: inset -15px 0px 15px -15px rgba(0,0,0,0.5);
 }
 
+#terminalWrapper{
+    background-color: #000000;
+    position:relative;
+}
 #terminal{
     padding:1.5rem;
-    background-color: #454545;
+    padding-bottom: 2.5rem;
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
 }
 
 h1{
