@@ -16,14 +16,14 @@ October 8, 2019
         <meta name="description" content="Teaching computing concepts through a gameified command line.">
         <meta name="author" content="SitePoint">
 
+        <link rel="stylesheet" href="style.css" type = "text/css" >
         <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700,900&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="xterm.css" type="text/css"/>
+        <!-- xterm -->
         <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
         <script src="node_modules/xterm/lib/xterm.js"></script>
         <script src = "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
 
-        <link rel="stylesheet" href="style.css" type = "text/css" >
     </head>
 
     <body>
@@ -32,16 +32,24 @@ October 8, 2019
                 <h1>Terminal</h1>
                 <div class = "Divider"></div>
                 <p>This is a paragraph explaining what to do with this terminal. Currently, there is nothing to do. Just type and press enter.</p>
+                <p>Here's more text explaining the second part. All this content needs to be defined dynamically. So this is just placeholder for styling.</p>
+
+                <div id = "grid-container">
+                    <div><a href="" class="brk-btn">Back</a></div>
+                    <div class = "rbutton"><a href="" class="brk-btn">Next</a></div>
+                </div>
             </div>
+
             <div id = "terminal"></div>
             <script>
-                var term = new Terminal();
-                //var fitAddon = new FitAddon();
                 
-                //term.loadAddon(fitAddon);
+                var term = new Terminal();
+                var fitAddon = new FitAddon.FitAddon();
+
+                term.loadAddon(fitAddon);
                 term.open(document.getElementById('terminal'));
 
-                //fitAddon.fit();
+                fitAddon.fit();
 
                 function runFakeTerminal() {
                     if (term._initialized) {

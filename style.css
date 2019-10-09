@@ -1,3 +1,7 @@
+:root{
+    --highlight-color: #4c5e7e;
+}
+
 body{
     padding:0;
     margin:0;
@@ -11,6 +15,7 @@ body{
     grid-template-columns: 20rem auto;
     height:100vh;
 }
+
 #sidebar{
     padding-top:0.8rem;
     padding-left:2rem;
@@ -21,10 +26,11 @@ body{
 
 #terminal{
     padding:1.5rem;
-    background-color: #000;
+    background-color: #454545;
 }
 
 h1{
+    color:var(--highlight-color);
     text-transform: uppercase;
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -40,6 +46,28 @@ p{
     text-align: justify;
 }
 .Divider{
-    border-bottom: 0.1rem solid black;
+    border-bottom: 0.2rem solid var(--highlight-color);
+
+}
+
+#grid-container{
+    position:absolute;
+    bottom:3rem;
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.brk-btn {
     
+    position: relative;
+    background: none;
+    color: var(--highlight-color);
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 0.2rem solid var(--highlight-color);
+    padding: 0.5rem 1rem;
+}
+
+.rbutton{
+    margin-left:2rem;
 }
