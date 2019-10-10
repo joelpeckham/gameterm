@@ -3,24 +3,59 @@ var term = new Terminal();
 var fitAddon = new FitAddon.FitAddon();
 var cmdhistory = [];
 var historyLocation = null;
+const promptString = "$ "
 
 term.loadAddon(fitAddon);
 term.open(document.getElementById('terminal'));
 fitAddon.fit();
 
+function prompt(term) {
+    term.write('\r\n' + promptString);
+}
 
-function runFakeTerminal() {
+function getTerminalLine(yPos){
+    // Takes int returns string
+    var lastLine = term._core.buffer.lines._array[yPos].translateToString().trim();
+    for (i = yPos; term._core.buffer.lines._array[i].isWrapped; i--){
+        lastLine = term._core.buffer.lines._array[i-1].translateToString().trim() + lastLine;
+    }
+    return lastLine.slice(2);
+}
+
+function writeToLine(lineContent, yPos, prompt){
+    // Takes string, int, and bool returns void;
+    term._core.buffer.lines._array[yPos].fill('');
+    term._core.buffer.x = 0;
+    term.write((prompt ? promptString : "") + lineContent);
+}
+
+function processLine(term, line){
+    var args = line.split(" ");
+    if (line.toUpperCase() == "CLEAR"){
+        term.writeln('')
+        setTimeout(function(){
+            term.clear();
+        }, 1);
+    }
+    else if (args[0].toUpperCase() == "ECHO"){
+        if (line.slice(5) != ""){
+            term.writeln('');
+            term.write(line.slice(5));
+        }
+    }
+};
+
+function runTerminal() {
     if (term._initialized) {
         return;
     }
-
     term._initialized = true;
 
     term.prompt = () => {
         term.write('\r\n$ ');
     };
 
-    term.write('$ ')
+    term.write(promptString)
 
     var lastTyped = 0;
     term.onKey(e => {
@@ -29,10 +64,14 @@ function runFakeTerminal() {
         var key = e.domEvent.keyCode
 
         if (key === 13) { //Return or Enter key
-            var lastLine = term._core.buffer.lines._array[term._core.buffer.y].translateToString().trim().slice(2);
-            processLine(lastLine);
-            lastTyped = 0;
-            historyLocation = cmdhistory.length;
+            var line = getTerminalLine(term._core.buffer.y);
+            if (line != ''){
+                processLine(term, line);
+                console.log(line);
+                lastTyped = 0;
+                cmdhistory.push(line)
+                historyLocation = cmdhistory.length;
+            }
             prompt(term)
         } 
         else if (key === 8) { //Backspace or delete key
@@ -52,22 +91,16 @@ function runFakeTerminal() {
             }
         } 
         else if (key === 38) { //Up arrow
-            console.log(cmdhistory);
             if (historyLocation > 0) {
-                term._core.buffer.lines._array[term._core.buffer.y].fill('');
-                term._core.buffer.x = 0;
                 historyLocation -= 1;
-                term.write("$ " + cmdhistory[historyLocation]);
+                writeToLine(cmdhistory[historyLocation],term._core.buffer.y,true)
             }
         } 
         else if (key === 40) { //Down arrow
-            console.log(cmdhistory);
             cmdhistory.push("");
             if (historyLocation < cmdhistory.length - 1) {
-                term._core.buffer.lines._array[term._core.buffer.y].fill('');
-                term._core.buffer.x = 0;
                 historyLocation += 1;
-                term.write("$ " + cmdhistory[historyLocation]);
+                writeToLine(cmdhistory[historyLocation],term._core.buffer.y,true)
             }
             cmdhistory.pop();
         } 
@@ -78,27 +111,4 @@ function runFakeTerminal() {
     });
 }
 
-function processLine(line){
-    var args = line.split(" ");
-    if (line != ''){
-        cmdhistory.push(line)
-        if (line.toUpperCase() == "CLEAR"){
-            term.writeln('')
-            setTimeout(function(){
-                term.clear();
-            }, 1);
-        }
-        else if (args[0].toUpperCase() == "ECHO"){
-            if (line.slice(5) != ""){
-                term.writeln('');
-                term.write(line.slice(5));
-            }
-        }
-    }
-};
-
-function prompt(term) {
-    term.write('\r\n$ ');
-}
-
-runFakeTerminal();
+runTerminal();

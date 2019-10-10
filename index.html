@@ -23,6 +23,7 @@ October 8, 2019
         <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
         <script src="node_modules/xterm/lib/xterm.js"></script>
         <script src = "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
+        
 
     </head>
 
@@ -35,15 +36,16 @@ October 8, 2019
                 <p>Here's more text explaining the second part. All this content needs to be defined dynamically. So this is just placeholder for styling.</p>
 
                 <div id = "grid-container">
-                    <div><a href="" class="brk-btn">Back</a></div>
-                    <div class = "rbutton"><a href="" class="brk-btn">Next</a></div>
+                    <a class="brk-btn">Back</a>
+                    <a class="brk-btn">Next</a>
                 </div>
             </div>
 
-            <div id = "terminalWrapper"><div id = "terminal"></div></div>
+            <div id = "terminalWrapper">
+                <div id = "terminal"></div>
+            </div>
             <script src = "terminal.js"></script>
         </div>
-
     </body>
 
 </html>

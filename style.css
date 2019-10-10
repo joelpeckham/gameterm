@@ -63,11 +63,11 @@ p{
     position:absolute;
     bottom:3rem;
     display: grid;
-    grid-template-columns: auto auto;
+    grid-column-gap: 2rem;
+    grid-template-columns:auto auto;
 }
 
 .brk-btn {
-    
     position: relative;
     background: none;
     color: var(--highlight-color);
@@ -77,6 +77,3 @@ p{
     padding: 0.5rem 1rem;
 }
 
-.rbutton{
-    margin-left:2rem;
-}
