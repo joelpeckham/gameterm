@@ -1,8 +1,8 @@
 
 var term = new Terminal();
 var fitAddon = new FitAddon.FitAddon();
-var cmdhistory = []
-//var inter = new term.IBufferLine;
+var cmdhistory = [];
+var historyLocation = null;
 
 term.loadAddon(fitAddon);
 term.open(document.getElementById('terminal'));
@@ -32,6 +32,7 @@ function runFakeTerminal() {
             var lastLine = term._core.buffer.lines._array[term._core.buffer.y].translateToString().trim().slice(2);
             processLine(lastLine);
             lastTyped = 0;
+            historyLocation = cmdhistory.length;
             prompt(term)
         } 
         else if (key === 8) { //Backspace or delete key
@@ -51,10 +52,24 @@ function runFakeTerminal() {
             }
         } 
         else if (key === 38) { //Up arrow
-            
+            console.log(cmdhistory);
+            if (historyLocation > 0) {
+                term._core.buffer.lines._array[term._core.buffer.y].fill('');
+                term._core.buffer.x = 0;
+                historyLocation -= 1;
+                term.write("$ " + cmdhistory[historyLocation]);
+            }
         } 
         else if (key === 40) { //Down arrow
-
+            console.log(cmdhistory);
+            cmdhistory.push("");
+            if (historyLocation < cmdhistory.length - 1) {
+                term._core.buffer.lines._array[term._core.buffer.y].fill('');
+                term._core.buffer.x = 0;
+                historyLocation += 1;
+                term.write("$ " + cmdhistory[historyLocation]);
+            }
+            cmdhistory.pop();
         } 
         else if (printable) {
             term.write(e.key);
@@ -64,17 +79,20 @@ function runFakeTerminal() {
 }
 
 function processLine(line){
-    cmdhistory.push(line)
-    if (line){
+    var args = line.split(" ");
+    if (line != ''){
+        cmdhistory.push(line)
         if (line.toUpperCase() == "CLEAR"){
             term.writeln('')
             setTimeout(function(){
                 term.clear();
-            }, 10);
+            }, 1);
         }
-        else{
-            term.writeln('')
-            term.write(line);
+        else if (args[0].toUpperCase() == "ECHO"){
+            if (line.slice(5) != ""){
+                term.writeln('');
+                term.write(line.slice(5));
+            }
         }
     }
 };
