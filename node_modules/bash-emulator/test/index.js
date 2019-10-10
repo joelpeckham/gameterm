@@ -1,2 +1,0 @@
-require('./system')
-require('./commands')
