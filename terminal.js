@@ -1,4 +1,5 @@
 
+console.log('Terminal.js Loaded!')
 var term = new Terminal();
 var fitAddon = new FitAddon.FitAddon();
 var cmdhistory = [];
@@ -10,16 +11,16 @@ term.open(document.getElementById('terminal'));
 fitAddon.fit();
 
 function prompt(term) {
-    term.write('\r\n' + promptString);
+    term.write("\r\n" + promptString);
 }
 
 function getTerminalLine(yPos){
     // Takes int returns string
-    var lastLine = term._core.buffer.lines._array[yPos].translateToString().trim();
+    var lastLine = term._core.buffer.lines._array[yPos].translateToString();
     for (i = yPos; term._core.buffer.lines._array[i].isWrapped; i--){
-        lastLine = term._core.buffer.lines._array[i-1].translateToString().trim() + lastLine;
+        lastLine = term._core.buffer.lines._array[i-1].translateToString() + lastLine;
     }
-    return lastLine.slice(2);
+    return lastLine.trim();
 }
 
 function writeToLine(lineContent, yPos, prompt){
@@ -52,7 +53,7 @@ function runTerminal() {
     term._initialized = true;
 
     term.prompt = () => {
-        term.write('\r\n$ ');
+        term.write("\r\n" + promptString);
     };
 
     term.write(promptString)
@@ -64,7 +65,7 @@ function runTerminal() {
         var key = e.domEvent.keyCode
 
         if (key === 13) { //Return or Enter key
-            var line = getTerminalLine(term._core.buffer.y);
+            var line = getTerminalLine(term._core.buffer.y).slice(2);
             if (line != ''){
                 processLine(term, line);
                 console.log(line);
@@ -110,5 +111,6 @@ function runTerminal() {
         }
     });
 }
-
+const input = document.querySelector('textarea');
+input.addEventListener('input', processLine(term,"python"));
 runTerminal();

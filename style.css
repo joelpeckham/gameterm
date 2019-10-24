@@ -12,7 +12,7 @@ body{
     padding:0;
     margin:0;
     display: grid;
-    grid-template-columns: 18rem auto;
+    grid-template-columns: 21rem auto;
     height:100vh;
 }
 
@@ -63,8 +63,8 @@ p{
     position:absolute;
     bottom:3rem;
     display: grid;
-    grid-column-gap: 2rem;
     grid-template-columns:auto auto;
+    grid-gap: 2rem;
 }
 
 .brk-btn {
