@@ -38,7 +38,14 @@ October 8, 2019
                 <p>This is a fake terminal. There's not much you can do.</p>
                 <p>Right now all this does is simulate a Python 3 REPL.
                   There's some issues with history and meta keys...</p>
-                <p>I've got lots of debugging to do.</p>
+                <p>I've got lots of debugging to do:</p>
+                <ul>
+                  <li>Fix history and delete to work with wrapping lines... I mean... I need to find a way of handling wrapped lines in general.</li>
+                  <li>Find way to use xTerm buffer as main text buffer instead of relying on the textarea.</li>
+                  <li>Fix history in general. Find way to avoid global list of history items.</li>
+                  <li>Refactor to avoid globals and make functions more portable.</li>
+                  <li>Fix intercepting and printing meta keys.</li>
+                </ul>
                 <div id = "grid-container">
                     <a class="brk-btn">Back</a>
                     <a class="brk-btn">Next</a>
