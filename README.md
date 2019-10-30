@@ -2,7 +2,7 @@
 Teaching computing concepts through a "gameified" command line.
 This is an open source project by Joel Peckham and Professor Robert Ordóñez of Southern Adventist University.
 
-# how to run on local system
+# How to run locally
 
 First clone or download the project.
 
