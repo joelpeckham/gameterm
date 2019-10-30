@@ -33,19 +33,17 @@ October 8, 2019
     <body onresize = 'fitAddon.fit()' onload = 'brython(1)'>
         <div id = "grid">
             <div id = "sidebar">
-                <h1>Terminal?</h1>
+                <h1>Terminal</h1>
                 <div class = "Divider"></div>
-                <p>This is a fake terminal. There are a few things you can do though.</p>
-                <p>Type "python" followed by a valid python expression and the evaluated expression will be printed.</p>
-                <p>Type "echo" followed by some text and the text will be printed.</p>
-                <p>Type "clear" to clean things up.</p>
-                <p>Access your command history with the arrow keys.</p>
-                <p id = pythonOutput></p>
+                <p>This is a fake terminal. There's not much you can do.</p>
+                <p>Right now all this does is simulate a Python 3 REPL.
+                  There's some issues with history and meta keys...</p>
+                <p>I've got lots of debugging to do.</p>
                 <div id = "grid-container">
                     <a class="brk-btn">Back</a>
                     <a class="brk-btn">Next</a>
                 </div>
-            e</div>
+            </div>
 
             <div id = "terminalWrapper">
                 <div id = "terminal"></div>
