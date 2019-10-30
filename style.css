@@ -12,11 +12,12 @@ body{
     padding:0;
     margin:0;
     display: grid;
-    grid-template-columns: 21rem auto;
-    height:100vh;
+    grid-template-columns: auto;
+    height:50vh;
 }
 
 #sidebar{
+    display:none;
     padding-top:0.8rem;
     padding-left:2rem;
     padding-right:3rem;
@@ -77,3 +78,7 @@ p{
     padding: 0.5rem 1rem;
 }
 
+#code {
+    position:relative;
+
+}

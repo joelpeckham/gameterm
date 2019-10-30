@@ -1,57 +1,16 @@
-print('Brython Running!')
 import sys
 import tb as traceback
-
+import javascript
 from browser import document as doc
 from browser import window, alert, console
 
-_credits = """    Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands
-    for supporting Python development.  See www.python.org for more information."""
+_credits = """Credits"""
+_copyright = """Copyright Notice"""
+_license = """License Notice"""
 
-_copyright = """Copyright (c) 2012, Pierre Quentel pierre.quentel@gmail.com
-All Rights Reserved.
-
-Copyright (c) 2001-2013 Python Software Foundation.
-All Rights Reserved.
-
-Copyright (c) 2000 BeOpen.com.
-All Rights Reserved.
-
-Copyright (c) 1995-2001 Corporation for National Research Initiatives.
-All Rights Reserved.
-
-Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.
-All Rights Reserved."""
-
-_license = """Copyright (c) 2012, Pierre Quentel pierre.quentel@gmail.com
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer. Redistributions in binary
-form must reproduce the above copyright notice, this list of conditions and
-the following disclaimer in the documentation and/or other materials provided
-with the distribution.
-Neither the name of the <ORGANIZATION> nor the names of its contributors may
-be used to endorse or promote products derived from this software without
-specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-"""
-
+jterm = javascript.this().term
 CODE_ELT = doc['code']
+OUT_BUFFER = ''
 
 def credits():
     print(_credits)
@@ -86,7 +45,9 @@ class Trace:
 def print_tb():
     trace = Trace()
     traceback.print_exc(file=trace)
-    CODE_ELT.value += trace.format()
+    formatted = trace.format()
+    CODE_ELT.value += formatted
+    writeTerm(formatted)
 
 def syntax_error(args):
     info, filename, lineno, offset, line = args
@@ -96,8 +57,6 @@ def syntax_error(args):
     print("SyntaxError:", info)
     flush()
 
-OUT_BUFFER = ''
-
 def write(data):
     global OUT_BUFFER
     OUT_BUFFER += str(data)
@@ -105,7 +64,16 @@ def write(data):
 def flush():
     global CODE_ELT, OUT_BUFFER
     CODE_ELT.value += OUT_BUFFER
+    writeTerm(OUT_BUFFER)
     OUT_BUFFER = ''
+
+def writeTerm(text):
+    for char in text:
+        if char == '\n' or char == '\r':
+            jterm.writeln('')
+        else:
+            jterm.write(char)
+
 
 sys.stdout.write = sys.stderr.write = write
 sys.stdout.__len__ = sys.stderr.__len__ = lambda: len(OUT_BUFFER)
@@ -121,25 +89,30 @@ editor_ns = {'credits':credits,
     '__name__':'__main__'}
 
 def cursorToEnd(*args):
-    pos = len(doc['code'].value)
-    doc['code'].setSelectionRange(pos, pos)
-    doc['code'].scrollTop = doc['code'].scrollHeight
+    pos = len(CODE_ELT.value)
+    jterm._core.buffer.x = len(javascript.this().getTermLine()) #move cursor to end
+    CODE_ELT.setSelectionRange(pos, pos)
+    CODE_ELT.scrollTop = CODE_ELT.scrollHeight
+
 
 def get_col(area):
     # returns the column num of cursor
-    sel = doc['code'].selectionStart
-    lines = doc['code'].value.split('\n')
+    sel = CODE_ELT.selectionStart
+    lines = CODE_ELT.value.split('\n')
     for line in lines[:-1]:
         sel -= len(line) + 1
     return sel
 
 def myKeyPress(event):
+    #javascript.this().console.log("myKeyPress()", event, event.keyCode)
     global _status, current
+
     if event.keyCode == 9:  # tab key
         event.preventDefault()
-        doc['code'].value += "    "
+        CODE_ELT.value += "    "
+        writeTerm("    ")
     elif event.keyCode == 13:  # return
-        src = doc['code'].value
+        src = CODE_ELT.value
         if _status == "main":
             currentLine = src[src.rfind('>>>') + 4:]
         elif _status == "3string":
@@ -148,10 +121,12 @@ def myKeyPress(event):
         else:
             currentLine = src[src.rfind('...') + 4:]
         if _status == 'main' and not currentLine.strip():
-            doc['code'].value += '\n>>> '
+            CODE_ELT.value += '\n>>> '
+            writeTerm('\n>>> ')
             event.preventDefault()
             return
-        doc['code'].value += '\n'
+        CODE_ELT.value += '\n'
+        writeTerm('\n')
         history.append(currentLine)
         current = len(history)
         if _status == "main" or _status == "3string":
@@ -161,15 +136,18 @@ def myKeyPress(event):
                 if _ is not None:
                     write(repr(_)+'\n')
                 flush()
-                doc['code'].value += '>>> '
+                CODE_ELT.value += '>>> '
+                writeTerm('>>> ')
                 _status = "main"
             except IndentationError:
-                doc['code'].value += '... '
+                CODE_ELT.value += '... '
+                writeTerm('... ')
                 _status = "block"
             except SyntaxError as msg:
                 if str(msg) == 'invalid syntax : triple string end not found' or \
                     str(msg).startswith('Unbalanced bracket'):
-                    doc['code'].value += '... '
+                    CODE_ELT.value += '... '
+                    writeTerm('... ')
                     _status = "3string"
                 elif str(msg) == 'eval() argument must be an expression':
                     try:
@@ -177,21 +155,25 @@ def myKeyPress(event):
                     except:
                         print_tb()
                     flush()
-                    doc['code'].value += '>>> '
+                    CODE_ELT.value += '>>> '
+                    writeTerm('>>> ')
                     _status = "main"
                 elif str(msg) == 'decorator expects function':
-                    doc['code'].value += '... '
+                    CODE_ELT.value += '... '
+                    writeTerm('... ')
                     _status = "block"
                 else:
                     syntax_error(msg.args)
-                    doc['code'].value += '>>> '
+                    CODE_ELT.value += '>>> '
+                    writeTerm('>>> ')
                     _status = "main"
             except:
                 # the full traceback includes the call to eval(); to
                 # remove it, it is stored in a buffer and the 2nd and 3rd
                 # lines are removed
                 print_tb()
-                doc['code'].value += '>>> '
+                CODE_ELT.value += '>>> '
+                writeTerm('>>> ')
                 _status = "main"
         elif currentLine == "":  # end of block
             block = src[src.rfind('>>>') + 4:].splitlines()
@@ -206,65 +188,77 @@ def myKeyPress(event):
             except:
                 print_tb()
             flush()
-            doc['code'].value += '>>> '
+            CODE_ELT.value += '>>> '
+            writeTerm('>>> ')
         else:
-            doc['code'].value += '... '
+            CODE_ELT.value += '... '
+            writeTerm('... ')
 
         cursorToEnd()
         event.preventDefault()
+    elif chr(event.keyCode).isprintable() and event.keyCode not in [37,38,39,40]:
+        event.preventDefault()
+        CODE_ELT.value += event.key
+        writeTerm(event.key)
 
 def myKeyDown(event):
+    javascript.this().console.log("myKeyDown()", event)
     global _status, current
     if event.keyCode == 37:  # left arrow
-        sel = get_col(doc['code'])
+        sel = get_col(CODE_ELT)
         if sel < 5:
             event.preventDefault()
             event.stopPropagation()
     elif event.keyCode == 36:  # line start
-        pos = doc['code'].selectionStart
-        col = get_col(doc['code'])
-        doc['code'].setSelectionRange(pos - col + 4, pos - col + 4)
+        pos = CODE_ELT.selectionStart
+        col = get_col(CODE_ELT)
+        CODE_ELT.setSelectionRange(pos - col + 4, pos - col + 4)
         event.preventDefault()
     elif event.keyCode == 38:  # up
         if current > 0:
-            pos = doc['code'].selectionStart
-            col = get_col(doc['code'])
+            pos = CODE_ELT.selectionStart
+            col = get_col(CODE_ELT)
             # remove current line
-            doc['code'].value = doc['code'].value[:pos - col + 4]
+            CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
             current -= 1
-            doc['code'].value += history[current]
+            CODE_ELT.value += history[current]
         event.preventDefault()
     elif event.keyCode == 40:  # down
         if current < len(history) - 1:
-            pos = doc['code'].selectionStart
-            col = get_col(doc['code'])
+            pos = CODE_ELT.selectionStart
+            col = get_col(CODE_ELT)
             # remove current line
-            doc['code'].value = doc['code'].value[:pos - col + 4]
+            CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
             current += 1
-            doc['code'].value += history[current]
+            CODE_ELT.value += history[current]
         event.preventDefault()
     elif event.keyCode == 8:  # backspace
-        src = doc['code'].value
+        src = CODE_ELT.value
         lstart = src.rfind('\n')
         if (lstart == -1 and len(src) < 5) or (len(src) - lstart < 6):
             event.preventDefault()
             event.stopPropagation()
+
+        currentLine = javascript.this().getTermLine()
+        javascript.this().console.log(currentLine)
+        if (currentLine[:4] == '>>> ' or currentLine[:4] == '... ') \
+        and jterm._core.buffer.x > 4:
+            jterm.write('\b \b')
+            CODE_ELT.value = CODE_ELT.value[:-1]
+
     elif event.ctrlKey and event.keyCode == 65: # ctrl+a
-        src = doc['code'].value
-        pos = doc['code'].selectionStart
-        col = get_col(doc['code'])
-        doc['code'].setSelectionRange(pos - col + 4, len(src))
+        src = CODE_ELT.value
+        pos = CODE_ELT.selectionStart
+        col = get_col(CODE_ELT)
+        CODE_ELT.setSelectionRange(pos - col + 4, len(src))
         event.preventDefault()
     elif event.keyCode in [33, 34]: # page up, page down
         event.preventDefault()
 
-
-doc['code'].bind('keypress', myKeyPress)
-doc['code'].bind('keydown', myKeyDown)
-doc['code'].bind('click', cursorToEnd)
+CODE_ELT.bind('keypress', myKeyPress)
+CODE_ELT.bind('keydown', myKeyDown)
+CODE_ELT.bind('click', cursorToEnd)
 v = sys.implementation.version
-doc['code'].value = "Brython %s.%s.%s on %s %s\n>>> " % (
-    v[0], v[1], v[2], window.navigator.appName, window.navigator.appVersion)
-doc['code'].value += 'Type "copyright", "credits" or "license" for more information.'
-doc['code'].focus()
+CODE_ELT.value = ">>> "
 cursorToEnd()
+writeTerm(">>> ")

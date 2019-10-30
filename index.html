@@ -25,15 +25,15 @@ October 8, 2019
         <script src = "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
 
         <!-- brython -->
-        <script src = "brython.js"></script>
-        <script src = "brython_stdlib.js"></script>
+        <script type="text/javascript" src="brython.js"></script>
+        <script type="text/javascript" src="brython_stdlib.js"></script>
 
     </head>
 
-    <body onresize = 'fitAddon.fit();' onload = "brython(1)">
+    <body onresize = 'fitAddon.fit()' onload = 'brython(1)'>
         <div id = "grid">
             <div id = "sidebar">
-                <h1>Terminal</h1>
+                <h1>Terminal?</h1>
                 <div class = "Divider"></div>
                 <p>This is a fake terminal. There are a few things you can do though.</p>
                 <p>Type "python" followed by a valid python expression and the evaluated expression will be printed.</p>
@@ -45,15 +45,15 @@ October 8, 2019
                     <a class="brk-btn">Back</a>
                     <a class="brk-btn">Next</a>
                 </div>
-            </div>
+            e</div>
 
             <div id = "terminalWrapper">
                 <div id = "terminal"></div>
             </div>
-            <script type = "text/python" src = "console.py"></script>
+            <script type = "text/python" src = "http://0.0.0.0:8000/console.py" ></script>
             <script src = "terminal.js"></script>
         </div>
-        <textarea id="code" class="codearea" rows = 20 onchange="console.log('update')"></textarea>
+        <textarea id="code" class="codearea" cols = 100 rows = 20></textarea>
     </body>
 
 </html>
