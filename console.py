@@ -71,6 +71,7 @@ def flush():
     OUT_BUFFER = ''
 
 def writeTerm(text):
+    #clog(f"Printing `{text}`")
     for char in text:
         if char == '\n' or char == '\r':
             jterm.writeln('')
@@ -261,22 +262,22 @@ def pressedBackspace(event):
         jterm.write('\b \b')
         CODE_ELT.value = CODE_ELT.value[:-1]
 
-def pressedCtrlc(event):
+def pressedCtrlKeyC(event):
     javascript.this().location.reload()
 
 def termKeyDown(event):
     # clog("Pressed Key: " + event.key)
-    if "pressed" + event.key in globals():
-        globals()["pressed" + event.key](event)
+    if "pressed" + event.code in globals():
+        globals()["pressed" + event.code](event)
     elif event.ctrlKey:
-        if "pressedCtrl" + event.key in globals():
-            globals()["pressedCtrl" + event.key](event)
-    elif chr(event.keyCode).isprintable() and event.keyCode not in [37,38,39,40]:
+        if "pressedCtrl" + event.code in globals():
+            globals()["pressedCtrl" + event.code](event)
+    elif chr(event.keyCode).isprintable():
         event.preventDefault()
         CODE_ELT.value += event.key
         writeTerm(event.key)
 
-jterm.element.bind('keypress', termKeyDown)
+doc["keyTrigger"].bind('keypress', termKeyDown)
 CODE_ELT.value = ">>> "
 cursorToEnd()
 writeTerm(">>> ")

@@ -8,8 +8,9 @@ fitAddon.fit();
 
 
 function getTermLine(){
-	return term.buffer.getLine(term.buffer.cursorY).translateToString(true)
+	line = term.buffer.getLine(term.buffer.cursorY).translateToString(true)
+	return line
 }
 
 
-term.onKey(e => {kbe = new KeyboardEvent('keypress', e.domEvent); term.element.dispatchEvent(kbe);});
+term.onKey(e => {kbe = new KeyboardEvent('keypress', e.domEvent); document.getElementById("keyTrigger").dispatchEvent(kbe); console.log(kbe)});
