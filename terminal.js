@@ -12,4 +12,4 @@ function getTermLine(){
 }
 
 
-term.onKey(e => {term.element.dispatchEvent(new KeyboardEvent(e.domEvent.type, e.domEvent))});
+term.onKey(e => {kbe = new KeyboardEvent('keypress', e.domEvent); term.element.dispatchEvent(kbe);});
