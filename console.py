@@ -5,7 +5,7 @@ from browser import document as doc
 from browser import window, alert, console
 
 # The Credits, Copyright, and License information have been temporarily
-# removed to make this file more readible. In the mean time this information 
+# removed to make this file more readible. In the mean time this information
 # can be found at https://brython.info/tests/console.py.
 _credits = """Credits"""
 _copyright = """Copyright Notice"""
@@ -51,7 +51,6 @@ def print_tb():
     trace = Trace()
     traceback.print_exc(file=trace)
     formatted = trace.format()
-    CODE_ELT.value += formatted
     writeTerm(formatted)
 
 def syntax_error(args):
@@ -67,8 +66,7 @@ def write(data):
     OUT_BUFFER += str(data)
 
 def flush():
-    global CODE_ELT, OUT_BUFFER
-    CODE_ELT.value += OUT_BUFFER
+    global OUT_BUFFER
     writeTerm(OUT_BUFFER)
     OUT_BUFFER = ''
 
@@ -95,41 +93,32 @@ editor_ns = {'credits':credits,
     '__name__':'__main__'}
 
 def cursorToEnd(*args):
-    pos = len(CODE_ELT.value)
-    jterm._core.buffer.x = len(javascript.this().getTermLine()) #move cursor to end
-    CODE_ELT.setSelectionRange(pos, pos)
-    CODE_ELT.scrollTop = CODE_ELT.scrollHeight
+    jterm._core.buffer.y = javascript.this().getLastTermLineNum()
+    jterm._core.buffer.x = len(getTermLine()) #move cursor to end
 
 
 def get_col(area):
-    # returns the column num of cursor
-    sel = CODE_ELT.selectionStart
-    lines = CODE_ELT.value.split('\n')
-    for line in lines[:-1]:
-        sel -= len(line) + 1
-    return sel
+    return jterm._core.buffer.x
 
 def pressedTab(event):
     event.preventDefault()
-    CODE_ELT.value += "    "
     writeTerm("    ")
 
 def pressedEnter(event):
-    global _status, current
+    global _status
     src = CODE_ELT.value
     if _status == "main":
-        currentLine = src[src.rfind('>>>') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
     elif _status == "3string":
-        currentLine = src[src.rfind('>>>') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
         currentLine = currentLine.replace('\n... ', '\n')
     else:
-        currentLine = src[src.rfind('...') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
+    #clog(f"Current line: '{currentLine}'")
     if _status == 'main' and not currentLine.strip():
-        CODE_ELT.value += '\n>>> '
         writeTerm('\n>>> ')
         event.preventDefault()
         return
-    CODE_ELT.value += '\n'
     writeTerm('\n')
     history.append(currentLine)
     current = len(history)
@@ -140,17 +129,14 @@ def pressedEnter(event):
             if _ is not None:
                 write(repr(_)+'\n')
             flush()
-            CODE_ELT.value += '>>> '
             writeTerm('>>> ')
             _status = "main"
         except IndentationError:
-            CODE_ELT.value += '... '
             writeTerm('... ')
             _status = "block"
         except SyntaxError as msg:
             if str(msg) == 'invalid syntax : triple string end not found' or \
                 str(msg).startswith('Unbalanced bracket'):
-                CODE_ELT.value += '... '
                 writeTerm('... ')
                 _status = "3string"
             elif str(msg) == 'eval() argument must be an expression':
@@ -159,16 +145,13 @@ def pressedEnter(event):
                 except:
                     print_tb()
                 flush()
-                CODE_ELT.value += '>>> '
                 writeTerm('>>> ')
                 _status = "main"
             elif str(msg) == 'decorator expects function':
-                CODE_ELT.value += '... '
                 writeTerm('... ')
                 _status = "block"
             else:
                 syntax_error(msg.args)
-                CODE_ELT.value += '>>> '
                 writeTerm('>>> ')
                 _status = "main"
         except:
@@ -176,10 +159,12 @@ def pressedEnter(event):
             # remove it, it is stored in a buffer and the 2nd and 3rd
             # lines are removed
             print_tb()
-            CODE_ELT.value += '>>> '
             writeTerm('>>> ')
             _status = "main"
     elif currentLine == "":  # end of block
+        clog("WOOHOO!")
+        src = '\n'.join([jterm.buffer.getLine(line).translateToString(true).rstrip() for lines in range(0,javascript.this().getLastTermLineNum())])
+        clog('Here',src)
         block = src[src.rfind('>>>') + 4:].splitlines()
         block = [block[0]] + [b[4:] for b in block[1:]]
         block_src = '\n'.join(block)
