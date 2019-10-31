@@ -4,7 +4,9 @@ import javascript
 from browser import document as doc
 from browser import window, alert, console
 
-
+# The Credits, Copyright, and License information have been temporarily
+# removed to make this file more readible. In the mean time this information 
+# can be found at https://brython.info/tests/console.py.
 _credits = """Credits"""
 _copyright = """Copyright Notice"""
 _license = """License Notice"""
