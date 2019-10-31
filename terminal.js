@@ -14,4 +14,19 @@ function getTermLine(lineNum){
 	return line.translateToString(true) + lineString;
 }
 
-term.onKey(e => {kbe = new KeyboardEvent('keypress', e.domEvent); document.getElementById("keyTrigger").dispatchEvent(kbe);});
+function getCursorY(){return term.buffer.cursorY;}
+
+function getTopTermLineNum(){return term.buffer.baseY;}
+
+function getLastTermLineNum(){
+	for (i = term.buffer.length - 1; i >= term.buffer.baseY; i--){
+		lineCandidate = term.buffer.getLine(i).translateToString().trim();
+		if(lineCandidate && lineCandidate != "") return i;
+	}
+	return 0;
+}
+
+term.onKey(e => {
+	kbe = new KeyboardEvent('keypress', e.domEvent);
+	document.getElementById("keyTrigger").dispatchEvent(kbe);
+});
