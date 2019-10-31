@@ -184,13 +184,21 @@ def pressedEnter(event):
     event.preventDefault()
 
 def pressedArrowLeft(event):
-    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
-    if (currentLine[:4] != '>>> ' and currentLine[:4] != '... ') or jterm._core.buffer.x > 4:
-        jterm.write("[D")
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY)
+    lineText = currentLine.translateToString(True).rstrip()
+    if (lineText[:4] != '>>> ' and lineText[:4] != '... ') or jterm._core.buffer.x > 4:
+        if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
+            clog(jterm._core.buffer.x,jterm._core.buffer.y)
+            jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
+            jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+            jterm.write("[C")
+        else:
+            clog('write left arrow')
+            jterm.write("[D")
 
 def pressedArrowRight(event):
     currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
-    if jterm._core.buffer.x <= len(currentLine.rstrip()) - 1:
+    if jterm._core.buffer.x <= len(currentLine) - 1:
         jterm.write("[C")
 
 def pressedArrowUp(event):
