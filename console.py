@@ -186,21 +186,24 @@ def pressedEnter(event):
 def pressedArrowLeft(event):
     currentLine = jterm.buffer.getLine(jterm.buffer.cursorY)
     lineText = currentLine.translateToString(True).rstrip()
-    if (lineText[:4] != '>>> ' and lineText[:4] != '... ') or jterm._core.buffer.x > 4:
-        if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
-            clog(jterm._core.buffer.x,jterm._core.buffer.y)
-            jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
-            jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
-            jterm.write("[C")
-        else:
-            clog('write left arrow')
-            jterm.write("[D")
+    if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
+        clog(jterm._core.buffer.x,jterm._core.buffer.y)
+        jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
+        jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm.write("[C")
+    elif (lineText[:3] != '>>>' and lineText[:3] != '...') or (jterm._core.buffer.x > 4):
+        clog('write left arrow')
+        jterm.write("[D")
 
 def pressedArrowRight(event):
     currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
-    if jterm._core.buffer.x <= len(currentLine) - 1:
+    nextWrapped = jterm.buffer.getLine(jterm.buffer.cursorY + 1).isWrapped
+    if nextWrapped and jterm._core.buffer.x == len(currentLine) - 1:
+        jterm._core.buffer.x = 0
+        jterm._core.buffer.y += 1
+        jterm.write("[D")
+    elif jterm._core.buffer.x <= len(currentLine) - 1:
         jterm.write("[C")
-
 def pressedArrowUp(event):
     pass
     # currentLine = getTermLine()
@@ -266,6 +269,5 @@ def termKeyDown(event):
         writeTerm(event.key)
 
 doc["keyTrigger"].bind('keypress', termKeyDown)
-CODE_ELT.value = ">>> "
 cursorToEnd()
 writeTerm(">>> ")
