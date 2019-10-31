@@ -162,9 +162,9 @@ def pressedEnter(event):
             writeTerm('>>> ')
             _status = "main"
     elif currentLine == "":  # end of block
-        clog("WOOHOO!")
-        src = '\n'.join([jterm.buffer.getLine(line).translateToString(true).rstrip() for lines in range(0,javascript.this().getLastTermLineNum())])
-        clog('Here',src)
+
+        #This is really bad. Needs to be fixed to avoid constructing entire history of terminal every time.
+        src = '\n'.join([jterm.buffer.getLine(line).translateToString(True).rstrip() for line in range(0,javascript.this().getLastTermLineNum())])
         block = src[src.rfind('>>>') + 4:].splitlines()
         block = [block[0]] + [b[4:] for b in block[1:]]
         block_src = '\n'.join(block)
@@ -177,10 +177,8 @@ def pressedEnter(event):
         except:
             print_tb()
         flush()
-        CODE_ELT.value += '>>> '
         writeTerm('>>> ')
     else:
-        CODE_ELT.value += '... '
         writeTerm('... ')
 
     cursorToEnd()
