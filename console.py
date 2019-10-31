@@ -180,59 +180,54 @@ def pressedEnter(event):
         writeTerm('>>> ')
     else:
         writeTerm('... ')
-
     cursorToEnd()
     event.preventDefault()
 
 def pressedArrowLeft(event):
-    currentLine = getTermLine()
-    if (currentLine[:4] == '>>> ' or currentLine[:4] == '... ') \
-    and jterm._core.buffer.x > 4:
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
+    if (currentLine[:4] != '>>> ' and currentLine[:4] != '... ') or jterm._core.buffer.x > 4:
         jterm.write("[D")
-    sel = get_col(CODE_ELT)
-    if sel < 5:
-        event.preventDefault()
-        event.stopPropagation()
 
 def pressedArrowRight(event):
-    clog("hmm")
-    currentLine = getTermLine()
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
     if jterm._core.buffer.x <= len(currentLine.rstrip()) - 1:
         jterm.write("[C")
 
 def pressedArrowUp(event):
-    currentLine = getTermLine()
-    global current
-    if current > 0:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        # remove current line
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        current -= 1
-        CODE_ELT.value += history[current]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt + history[current])
-        event.preventDefault()
+    pass
+    # currentLine = getTermLine()
+    # global current
+    # if current > 0:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     # remove current line
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     current -= 1
+    #     CODE_ELT.value += history[current]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt + history[current])
+    #     event.preventDefault()
 
 def pressedArrowDown(event):
-    currentLine = getTermLine()
-    global current
-    if current < len(history) - 1:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        # remove current line
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        current += 1
-        CODE_ELT.value += history[current]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt + history[current])
-    elif current == len(history) - 1:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt)
-    event.preventDefault()
+    pass
+    # currentLine = getTermLine()
+    # global current
+    # if current < len(history) - 1:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     # remove current line
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     current += 1
+    #     CODE_ELT.value += history[current]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt + history[current])
+    # elif current == len(history) - 1:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt)
+    # event.preventDefault()
 
 def pressedBackspace(event):
     currentLine = getTermLine()
