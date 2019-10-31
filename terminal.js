@@ -1,5 +1,5 @@
 console.log('Terminal.js Loaded!');
-var term = new Terminal({fontFamily:"'IBM Plex Mono', monospace"});
+var term = new Terminal({fontFamily:"'IBM Plex Mono', monospace", allowTransparency:true, theme:{background: 'rgba(255, 255, 255, 0.0)'}});
 var fitAddon = new FitAddon.FitAddon();
 
 term.loadAddon(fitAddon);

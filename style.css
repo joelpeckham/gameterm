@@ -25,7 +25,8 @@ body{
 }
 
 #terminalWrapper{
-    background-color: #000000;
+    background-color: #171a1d;
+    box-shadow: inset 0px 0px 100rem 3rem rgba(0,0,0,1);
     position:relative;
 }
 #terminal{
