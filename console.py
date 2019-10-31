@@ -241,17 +241,17 @@ def pressedArrowDown(event):
     # event.preventDefault()
 
 def pressedBackspace(event):
-    currentLine = getTermLine()
-    src = CODE_ELT.value
-    lstart = src.rfind('\n')
-    if (lstart == -1 and len(src) < 5) or (len(src) - lstart < 6):
-        event.preventDefault()
-        event.stopPropagation()
-
-    if (currentLine[:4] == '>>> ' or currentLine[:4] == '... ') \
-    and jterm._core.buffer.x > 4:
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY)
+    lineText = currentLine.translateToString(True).rstrip()
+    if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
+        jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
+        clog(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm.write("[C")
+        jterm.write(' ')
+    elif (lineText[:3] != '>>>' and lineText[:3] != '...') or (jterm._core.buffer.x > 4):
         jterm.write('\b \b')
-        CODE_ELT.value = CODE_ELT.value[:-1]
+
 
 def pressedCtrlKeyC(event):
     javascript.this().location.reload()
