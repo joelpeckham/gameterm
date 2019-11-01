@@ -77,10 +77,3 @@ p,li{
     border: 0.2rem solid var(--highlight-color);
     padding: 0.5rem 1rem;
 }
-
-#code {
-    position:absolute;
-    top:0;
-    left:0;
-    visibility:hidden;
-}

@@ -14,7 +14,6 @@ _license = """License Notice"""
 clog = javascript.this().console.log
 jterm = javascript.this().term
 getTermLine = javascript.this().getTermLine
-CODE_ELT = doc['code']
 OUT_BUFFER = ''
 
 def credits():
@@ -106,7 +105,6 @@ def pressedTab(event):
 
 def pressedEnter(event):
     global _status
-    src = CODE_ELT.value
     if _status == "main":
         currentLine = getTermLine().rstrip()[4:]
     elif _status == "3string":
@@ -265,7 +263,6 @@ def termKeyDown(event):
             globals()["pressedCtrl" + event.code](event)
     elif chr(event.keyCode).isprintable():
         event.preventDefault()
-        CODE_ELT.value += event.key
         writeTerm(event.key)
 
 doc["keyTrigger"].bind('keypress', termKeyDown)
