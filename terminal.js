@@ -1,5 +1,28 @@
-console.log('Terminal.js Loaded!');
-var term = new Terminal({fontSize:16,fontFamily:"'IBM Plex Mono', monospace", allowTransparency:true, theme:{background: 'rgba(255, 255, 255, 0.0)'}});
+class TerminalActiveLine {
+
+  constructor(lineList) {
+    this.lines = lineList;
+  }
+
+  getLine(index) {
+    return this.lines[index];
+  }
+
+	get lastLine() {
+    return this.getLine(this.lines.length() - 1);
+  }
+
+	appendLine(prompt,content){
+		lines.push({prompt:prompt,content:content})
+	}
+}
+
+var term = new Terminal({	cursorStyle:'bar',
+													fontSize:16,fontFamily:"'IBM Plex Mono', monospace",
+													allowTransparency:true,
+													theme:{background: 'rgba(255, 255, 255, 0.0)'}
+												});
+
 var fitAddon = new FitAddon.FitAddon();
 
 term.loadAddon(fitAddon);

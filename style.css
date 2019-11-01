@@ -25,7 +25,7 @@ body{
 }
 
 #terminalWrapper{
-    background-color: #171a1d;
+    background-color: #1d1e1f;
     box-shadow: inset 0px 0px 100rem 3rem rgba(0,0,0,1);
     position:relative;
 }
@@ -76,11 +76,4 @@ p,li{
     text-decoration: none;
     border: 0.2rem solid var(--highlight-color);
     padding: 0.5rem 1rem;
-}
-
-#code {
-    position:absolute;
-    top:0;
-    left:0;
-    visibility:hidden;
 }

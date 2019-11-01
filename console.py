@@ -5,7 +5,7 @@ from browser import document as doc
 from browser import window, alert, console
 
 # The Credits, Copyright, and License information have been temporarily
-# removed to make this file more readible. In the mean time this information 
+# removed to make this file more readible. In the mean time this information
 # can be found at https://brython.info/tests/console.py.
 _credits = """Credits"""
 _copyright = """Copyright Notice"""
@@ -14,7 +14,6 @@ _license = """License Notice"""
 clog = javascript.this().console.log
 jterm = javascript.this().term
 getTermLine = javascript.this().getTermLine
-CODE_ELT = doc['code']
 OUT_BUFFER = ''
 
 def credits():
@@ -51,7 +50,6 @@ def print_tb():
     trace = Trace()
     traceback.print_exc(file=trace)
     formatted = trace.format()
-    CODE_ELT.value += formatted
     writeTerm(formatted)
 
 def syntax_error(args):
@@ -67,8 +65,7 @@ def write(data):
     OUT_BUFFER += str(data)
 
 def flush():
-    global CODE_ELT, OUT_BUFFER
-    CODE_ELT.value += OUT_BUFFER
+    global OUT_BUFFER
     writeTerm(OUT_BUFFER)
     OUT_BUFFER = ''
 
@@ -95,41 +92,31 @@ editor_ns = {'credits':credits,
     '__name__':'__main__'}
 
 def cursorToEnd(*args):
-    pos = len(CODE_ELT.value)
-    jterm._core.buffer.x = len(javascript.this().getTermLine()) #move cursor to end
-    CODE_ELT.setSelectionRange(pos, pos)
-    CODE_ELT.scrollTop = CODE_ELT.scrollHeight
+    jterm._core.buffer.y = javascript.this().getLastTermLineNum()
+    jterm._core.buffer.x = len(getTermLine()) #move cursor to end
 
 
 def get_col(area):
-    # returns the column num of cursor
-    sel = CODE_ELT.selectionStart
-    lines = CODE_ELT.value.split('\n')
-    for line in lines[:-1]:
-        sel -= len(line) + 1
-    return sel
+    return jterm._core.buffer.x
 
 def pressedTab(event):
     event.preventDefault()
-    CODE_ELT.value += "    "
     writeTerm("    ")
 
 def pressedEnter(event):
-    global _status, current
-    src = CODE_ELT.value
+    global _status
     if _status == "main":
-        currentLine = src[src.rfind('>>>') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
     elif _status == "3string":
-        currentLine = src[src.rfind('>>>') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
         currentLine = currentLine.replace('\n... ', '\n')
     else:
-        currentLine = src[src.rfind('...') + 4:]
+        currentLine = getTermLine().rstrip()[4:]
+    #clog(f"Current line: '{currentLine}'")
     if _status == 'main' and not currentLine.strip():
-        CODE_ELT.value += '\n>>> '
         writeTerm('\n>>> ')
         event.preventDefault()
         return
-    CODE_ELT.value += '\n'
     writeTerm('\n')
     history.append(currentLine)
     current = len(history)
@@ -140,17 +127,14 @@ def pressedEnter(event):
             if _ is not None:
                 write(repr(_)+'\n')
             flush()
-            CODE_ELT.value += '>>> '
             writeTerm('>>> ')
             _status = "main"
         except IndentationError:
-            CODE_ELT.value += '... '
             writeTerm('... ')
             _status = "block"
         except SyntaxError as msg:
             if str(msg) == 'invalid syntax : triple string end not found' or \
                 str(msg).startswith('Unbalanced bracket'):
-                CODE_ELT.value += '... '
                 writeTerm('... ')
                 _status = "3string"
             elif str(msg) == 'eval() argument must be an expression':
@@ -159,16 +143,13 @@ def pressedEnter(event):
                 except:
                     print_tb()
                 flush()
-                CODE_ELT.value += '>>> '
                 writeTerm('>>> ')
                 _status = "main"
             elif str(msg) == 'decorator expects function':
-                CODE_ELT.value += '... '
                 writeTerm('... ')
                 _status = "block"
             else:
                 syntax_error(msg.args)
-                CODE_ELT.value += '>>> '
                 writeTerm('>>> ')
                 _status = "main"
         except:
@@ -176,10 +157,12 @@ def pressedEnter(event):
             # remove it, it is stored in a buffer and the 2nd and 3rd
             # lines are removed
             print_tb()
-            CODE_ELT.value += '>>> '
             writeTerm('>>> ')
             _status = "main"
     elif currentLine == "":  # end of block
+
+        #This is really bad. Needs to be fixed to avoid constructing entire history of terminal every time.
+        src = '\n'.join([jterm.buffer.getLine(line).translateToString(True).rstrip() for line in range(0,javascript.this().getLastTermLineNum())])
         block = src[src.rfind('>>>') + 4:].splitlines()
         block = [block[0]] + [b[4:] for b in block[1:]]
         block_src = '\n'.join(block)
@@ -192,77 +175,81 @@ def pressedEnter(event):
         except:
             print_tb()
         flush()
-        CODE_ELT.value += '>>> '
         writeTerm('>>> ')
     else:
-        CODE_ELT.value += '... '
         writeTerm('... ')
-
     cursorToEnd()
     event.preventDefault()
 
 def pressedArrowLeft(event):
-    currentLine = getTermLine()
-    if (currentLine[:4] == '>>> ' or currentLine[:4] == '... ') \
-    and jterm._core.buffer.x > 4:
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY)
+    lineText = currentLine.translateToString(True).rstrip()
+    if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
+        clog(jterm._core.buffer.x,jterm._core.buffer.y)
+        jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
+        jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm.write("[C")
+    elif (lineText[:3] != '>>>' and lineText[:3] != '...') or (jterm._core.buffer.x > 4):
+        clog('write left arrow')
         jterm.write("[D")
-    sel = get_col(CODE_ELT)
-    if sel < 5:
-        event.preventDefault()
-        event.stopPropagation()
 
 def pressedArrowRight(event):
-    clog("hmm")
-    currentLine = getTermLine()
-    if jterm._core.buffer.x <= len(currentLine.rstrip()) - 1:
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY).translateToString(True).rstrip()
+    nextWrapped = jterm.buffer.getLine(jterm.buffer.cursorY + 1).isWrapped
+    if nextWrapped and jterm._core.buffer.x == len(currentLine) - 1:
+        jterm._core.buffer.x = 0
+        jterm._core.buffer.y += 1
+        jterm.write("[D")
+    elif jterm._core.buffer.x <= len(currentLine) - 1:
         jterm.write("[C")
-
 def pressedArrowUp(event):
-    currentLine = getTermLine()
-    global current
-    if current > 0:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        # remove current line
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        current -= 1
-        CODE_ELT.value += history[current]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt + history[current])
-        event.preventDefault()
+    pass
+    # currentLine = getTermLine()
+    # global current
+    # if current > 0:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     # remove current line
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     current -= 1
+    #     CODE_ELT.value += history[current]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt + history[current])
+    #     event.preventDefault()
 
 def pressedArrowDown(event):
-    currentLine = getTermLine()
-    global current
-    if current < len(history) - 1:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        # remove current line
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        current += 1
-        CODE_ELT.value += history[current]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt + history[current])
-    elif current == len(history) - 1:
-        pos = CODE_ELT.selectionStart
-        col = get_col(CODE_ELT)
-        CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
-        prompt = currentLine[:4]
-        jterm.write("\x1b[2K\r" + prompt)
-    event.preventDefault()
+    pass
+    # currentLine = getTermLine()
+    # global current
+    # if current < len(history) - 1:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     # remove current line
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     current += 1
+    #     CODE_ELT.value += history[current]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt + history[current])
+    # elif current == len(history) - 1:
+    #     pos = CODE_ELT.selectionStart
+    #     col = get_col(CODE_ELT)
+    #     CODE_ELT.value = CODE_ELT.value[:pos - col + 4]
+    #     prompt = currentLine[:4]
+    #     jterm.write("\x1b[2K\r" + prompt)
+    # event.preventDefault()
 
 def pressedBackspace(event):
-    currentLine = getTermLine()
-    src = CODE_ELT.value
-    lstart = src.rfind('\n')
-    if (lstart == -1 and len(src) < 5) or (len(src) - lstart < 6):
-        event.preventDefault()
-        event.stopPropagation()
-
-    if (currentLine[:4] == '>>> ' or currentLine[:4] == '... ') \
-    and jterm._core.buffer.x > 4:
+    currentLine = jterm.buffer.getLine(jterm.buffer.cursorY)
+    lineText = currentLine.translateToString(True).rstrip()
+    if jterm._core.buffer.x == 0 and currentLine.isWrapped == True:
+        jterm._core.buffer.y -= 1 if jterm._core.buffer.y >= 1 else 0
+        clog(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm._core.buffer.x = len(jterm.buffer.getLine(jterm._core.buffer.y).translateToString())
+        jterm.write("[C")
+        jterm.write(' ')
+    elif (lineText[:3] != '>>>' and lineText[:3] != '...') or (jterm._core.buffer.x > 4):
         jterm.write('\b \b')
-        CODE_ELT.value = CODE_ELT.value[:-1]
+
 
 def pressedCtrlKeyC(event):
     javascript.this().location.reload()
@@ -276,10 +263,8 @@ def termKeyDown(event):
             globals()["pressedCtrl" + event.code](event)
     elif chr(event.keyCode).isprintable():
         event.preventDefault()
-        CODE_ELT.value += event.key
         writeTerm(event.key)
 
 doc["keyTrigger"].bind('keypress', termKeyDown)
-CODE_ELT.value = ">>> "
 cursorToEnd()
 writeTerm(">>> ")
