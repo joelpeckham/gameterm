@@ -1,20 +1,7 @@
-class TerminalActiveLine {
-
-  constructor(lineList) {
-    this.lines = lineList;
+class TerminalLine {
+  constructor() {
+    this.height = height;
   }
-
-  getLine(index) {
-    return this.lines[index];
-  }
-
-	get lastLine() {
-    return this.getLine(this.lines.length() - 1);
-  }
-
-	appendLine(prompt,content){
-		lines.push({prompt:prompt,content:content})
-	}
 }
 
 var term = new Terminal({	cursorStyle:'bar',
