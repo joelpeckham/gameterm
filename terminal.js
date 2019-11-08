@@ -1,6 +1,7 @@
 class TerminalLine {
-  constructor() {
-    this.height = height;
+  constructor(prompt, content) {
+    this.prompt = height;
+    this.content = content;
   }
 }
 
