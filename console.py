@@ -37,7 +37,7 @@ class Trace:
         self.buf += str(data)
 
     def format(self):
-        """Remove calls to function in this script from the traceback."""
+        # Remove calls to function in this script from the traceback.
         lines = self.buf.split("\n")
         stripped = [lines[0]]
         for i in range(1, len(lines), 2):
@@ -70,7 +70,6 @@ def flush():
     OUT_BUFFER = ''
 
 def writeTerm(text):
-    #clog(f"Printing `{text}`")
     for char in text:
         if char == '\n' or char == '\r':
             jterm.writeln('')
