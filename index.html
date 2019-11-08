@@ -27,10 +27,6 @@ October 8, 2019
         <script src="node_modules/xterm/lib/xterm.js"></script>
         <script src = "node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
 
-        <!-- brython -->
-        <script type="text/javascript" src="brython/brython.js"></script>
-        <script type="text/javascript" src="brython/brython_stdlib.js"></script>
-
     </head>
 
     <body onresize = 'fitAddon.fit()' onload = 'brython(1)'>
@@ -58,10 +54,8 @@ October 8, 2019
             <div id = "terminalWrapper">
                 <div id = "terminal"></div>
             </div>
-            <script type = "text/python" src = "http://0.0.0.0:8000/console.py" ></script>
             <script src = "terminal.js"></script>
         </div>
-        <div id = keyTrigger></div>
     </body>
 
 </html>
