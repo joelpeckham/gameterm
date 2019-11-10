@@ -1,21 +1,14 @@
 {
-  "name": "electron-quick-start",
+  "name": "gameTerm",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "A gameified command line learning tool.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "repository": "https://github.com/joelpeckham/gameterm",
+  "author": "Joel Peckham",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^7.1.1",
     "xterm": "^4.2.0-vscode1",
