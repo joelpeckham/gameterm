@@ -4,15 +4,19 @@ This is an open source project by Joel Peckham and Professor Robert Ordóñez of
 
 # How to run locally
 
+This whole this is an electron app built on [node.js](https://nodejs.org/en/), so make sure you have both [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/).
+
 First clone or download the project.
 
-For gameterm to run correctly, the gameterm-master directory must be hosted by an HTTP server.
-This can be easily achieved by changing your working directory to the gameterm-master directory like this:
+In a terminal, change directory to your clone like this:
 ```
-cd ~/user/Downloads/gameterm-master
+cd ~/Downloads/gameterm-master
 ```
-Start the HTTP server like this:
+Then install dependencies with [npm](https://www.npmjs.com/):
 ```
-python -m SimpleHTTPServer
+npm install
 ```
-After the HTTP server is running, http://0.0.0.0:8000/index.html may be opened in your browser.
+Start the application with [npm](https://www.npmjs.com/):
+```
+npm start
+```
