@@ -4,7 +4,7 @@ This is an open source project by Joel Peckham and Professor Robert Ordóñez of
 
 # How to run locally
 
-This whole this is an electron app built on [node.js](https://nodejs.org/en/), so make sure you have both [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/).
+This whole this is an electron app built on [node.js](https://nodejs.org/en/), so make sure you have [npm](https://www.npmjs.com/) installed.
 
 First clone or download the project.
 
