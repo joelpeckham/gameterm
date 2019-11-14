@@ -1,25 +1,33 @@
 {
-  "name": "gameTerm",
+  "name": "gameterm",
   "version": "1.0.0",
   "description": "A gameified command line learning tool.",
   "main": "main.js",
   "scripts": {
+    "test": "electron .",
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"gameterm\"",
     "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
   },
-  "repository": "https://github.com/joelpeckham/gameterm",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joelpeckham/gameterm"
+  },
   "author": "Joel Peckham",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joelpeckham/gameterm/issues"
+  },
+  "homepage": "https://github.com/joelpeckham/gameterm#readme",
   "devDependencies": {
-    "electron-packager": "^14.1.0"
-    "electron": "^7.1.1"
+    "electron": "^7.1.1",
+    "electron-packager": "^14.1.0",
+    "electron-rebuild": "^1.8.6"
   },
   "dependencies": {
     "node-pty": "^0.9.0",
-    "xterm": "^4.2.0-vscode1",
-    "xterm-addon-fit": "^0.3.0",
-    "electron": "^7.1.1"
+    "xterm": "^4.2.0",
+    "xterm-addon-fit": "^0.3.0"
   }
 }
