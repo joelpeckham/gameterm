@@ -5,11 +5,12 @@
 // selectively enable features needed in the rendering
 // process.
 
-console.log("Neato in render!")
+const {ipcRenderer} = require('electron')
 
 var os = require('os');
 var pty = require('node-pty');
 var Terminal = require('xterm').Terminal;
+var FitAddon = require('xterm-addon-fit').FitAddon;
 
 // Initialize node-pty with an appropriate shell
 const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
@@ -27,6 +28,12 @@ const xterm = new Terminal({	cursorStyle:'bar',
 													allowTransparency:true,
 													theme:{background: 'rgba(255, 255, 255, 0.0)'}
 												  });
+
+// Initialize xterm.js fit addon
+const fitAddon = new FitAddon();
+xterm.loadAddon(fitAddon);
+
+// Attach xterm to DOM and start xterm.
 xterm.open(document.getElementById('terminal'));
 
 // Setup communication between xterm.js and node-pty
@@ -34,3 +41,7 @@ xterm.onData(data => ptyProcess.write(data));
 ptyProcess.on('data', function (data) {
   xterm.write(data);
 });
+
+fitAddon.fit();
+
+ipcRenderer.on('resize', (event) => { fitAddon.fit(); } )
