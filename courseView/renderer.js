@@ -16,8 +16,8 @@ var FitAddon = require('xterm-addon-fit').FitAddon;
 const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
 const ptyProcess = pty.spawn(shell, [], {
   name: 'xterm-color',
-  cols: 80,
-  rows: 30,
+  cols: 100,
+  rows: 10,
   cwd: process.cwd(),
   env: process.env
 });
@@ -35,13 +35,12 @@ xterm.loadAddon(fitAddon);
 
 // Attach xterm to DOM and start xterm.
 xterm.open(document.getElementById('terminal'));
+fitAddon.fit();
 
 // Setup communication between xterm.js and node-pty
 xterm.onData(data => ptyProcess.write(data));
 ptyProcess.on('data', function (data) {
   xterm.write(data);
 });
-
-fitAddon.fit();
 
 ipcRenderer.on('resize', (event) => { fitAddon.fit(); } )

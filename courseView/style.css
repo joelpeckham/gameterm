@@ -12,11 +12,13 @@ body{
     padding:0;
     margin:0;
     display: grid;
-    grid-template-columns: 22rem auto;
+    grid-template-columns:auto;
     height:100vh;
 }
 
 #sidebar{
+    display:none;
+    visibility: hidden;
     padding-top:0.8rem;
     padding-left:2rem;
     padding-right:4rem;

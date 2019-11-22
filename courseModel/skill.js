@@ -1,5 +1,7 @@
-console.log("Skill.js Loaded and Running")
-
-function doSkill(){
-  console.log("Well lookie there a skill was done!")
+class Skill {
+  constructor(generator, check, requiredRewards) {
+    this.generator = generator;
+    this.check = check;
+    this.requiredRewards = requiredRewards;
+  }
 }
