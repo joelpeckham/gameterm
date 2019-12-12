@@ -1,3 +1,3 @@
-exports.skill = require("./skill.js");
-exports.repeatRule = require("./repeatRule.js");
-exports.exercise = require("./exercise.js");
+exports.Skill = require("./skill.js");
+exports.RepeatRule = require("./repeatRule.js");
+exports.Exercise = require("./exercise.js");

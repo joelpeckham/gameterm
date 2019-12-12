@@ -1,4 +1,4 @@
-class Skill {
+module.exports = class Skill {
   constructor(generator, check, requiredRewards) {
     this.generator = generator;
     this.check = check;

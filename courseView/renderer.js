@@ -12,19 +12,10 @@ var pty = require('node-pty');
 var Terminal = require('xterm').Terminal;
 var FitAddon = require('xterm-addon-fit').FitAddon;
 
-// Initialize node-pty with an appropriate shell
-const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
-const ptyProcess = pty.spawn(shell, [], {
-  name: 'xterm-color',
-  cols: 100,
-  rows: 10,
-  cwd: process.cwd(),
-  env: process.env
-});
-
 // Initialize xterm.js and attach it to the DOM
-const xterm = new Terminal({	cursorStyle:'bar',
-											    fontSize:16,fontFamily:"'IBM Plex Mono', monospace",
+const xterm = new Terminal({
+                          cursorStyle:'bar',
+											    fontSize:14,fontFamily:"'IBM Plex Mono', monospace",
 													allowTransparency:true,
 													theme:{background: 'rgba(255, 255, 255, 0.0)'}
 												  });
@@ -37,10 +28,29 @@ xterm.loadAddon(fitAddon);
 xterm.open(document.getElementById('terminal'));
 fitAddon.fit();
 
+
+// Initialize node-pty with an appropriate shell
+const shell = process.env[os.platform() === 'win32' ? 'COMSPEC' : 'SHELL'];
+let ptyProcess = pty.spawn(shell, [], {
+  name: 'xterm-color',
+  cols: xterm.cols,
+  rows: xterm.rows,
+  cwd: process.cwd(),
+  env: process.env
+});
+
 // Setup communication between xterm.js and node-pty
-xterm.onData(data => ptyProcess.write(data));
+xterm.onData(data => {
+  //console.log("Write PTY:", data)
+
+  ptyProcess.write(data);
+});
 ptyProcess.on('data', function (data) {
+  //console.log("Write xTerm:", data)
   xterm.write(data);
 });
 
-ipcRenderer.on('resize', (event) => { fitAddon.fit(); } )
+ipcRenderer.on('resizeWindow', (event) => {
+  fitAddon.fit();
+  ptyProcess.resize(xterm.cols, xterm.rows);
+})

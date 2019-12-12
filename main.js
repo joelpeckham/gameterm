@@ -25,7 +25,7 @@ function createWindow () {
   //mainWindow.webContents.openDevTools()
 
   // Resize xterm.js
-  mainWindow.on('resize',() => {mainWindow.webContents.send('resize')})
+  mainWindow.on('resize',() => {mainWindow.webContents.send('resizeWindow')})
 
 
   // Emitted when the window is closed.
@@ -59,5 +59,7 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+course = require('./courseModel')
 
-require('./courseModel')
+testskill = new course.Skill(() => {return "Enter your name"}, (v) => {return v}, 0)
+console.log(testskill.generator())
