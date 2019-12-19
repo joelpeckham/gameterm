@@ -42,8 +42,7 @@ let ptyProcess = pty.spawn(shell, [], {
 // Setup communication between xterm.js and node-pty
 xterm.onData(data => {
   //console.log("Write PTY:", data)
-
-  ptyProcess.write(data);
+ptyProcess.write(data);
 });
 ptyProcess.on('data', function (data) {
   //console.log("Write xTerm:", data)
@@ -54,3 +53,9 @@ ipcRenderer.on('resizeWindow', (event) => {
   fitAddon.fit();
   ptyProcess.resize(xterm.cols, xterm.rows);
 })
+
+ipcRenderer.on('prompt', (event, data) => {
+  xterm.write(data);
+})
+
+ipcRenderer.send("firstRenderFinished")
