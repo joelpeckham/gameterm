@@ -16,6 +16,14 @@ Then install dependencies with [npm](https://www.npmjs.com/):
 ```
 npm install
 ```
+Then, rerun electron-rebuild:
+```
+.\node_modules\.bin\electron-rebuild.cmd
+```
+Or if you're on Windows:
+```
+.\node_modules\.bin\electron-rebuild.cmd
+```
 Start the application with [npm](https://www.npmjs.com/):
 ```
 npm start
