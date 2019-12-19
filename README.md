@@ -18,7 +18,7 @@ npm install
 ```
 Then, rerun electron-rebuild:
 ```
-.\node_modules\.bin\electron-rebuild.cmd
+$(npm bin)/electron-rebuild
 ```
 Or if you're on Windows:
 ```
