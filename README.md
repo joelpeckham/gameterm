@@ -1,3 +1,6 @@
+# gameterm is now Sitka
+I've moved the project here: https://github.com/joelpeckham/Sitka
+
 # gameterm
 Teaching computing concepts through a "gameified" command line.
 This is an open source project by [Joel Peckham](https://www.instagram.com/joelskyler/) and Professor [Robert Ordóñez](http://computing.southern.edu/rordonez/) of [Southern Adventist University](https://www.southern.edu/).
